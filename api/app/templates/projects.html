@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Projects list</h1>
+    <table>
+        <tr>
+            <th>Project title</th>
+            <th>Status</th>
+            <th>Download</th>
+        </tr>
+        {% for project in projects %}
+            <tr>
+                <td>{{ project.title }}</td>
+                <td>{{ project.status }}</td>
+                <td>
+                    {% if project.download %}
+                        <a href="{{ project.download }}">Download</a>
+                    {% else %}
+                        Unavailable
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <form action="/api/v1.0/projects/" enctype="multipart/form-data" method="POST">
+        <input type="file" name="projfile"/>
+        <input type="submit" value="Upload file">
+    </form>
+
+{% endblock %}

@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: postgres:alpine
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+  mongo:
+    image: mongo:4
+    ports:
+      - 27017:27107
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+  rabbit:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  api-service:
+    build: api
+    depends_on:
+      - postgres
+      - mongo
+      - rabbit
+    environment:
+      POSTGRES_USERNAME: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      MONGO_USERNAME: ${MONGO_USERNAME}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+      RABBIT_USERNAME: ${RABBIT_USERNAME}
+      RABBIT_PASSWORD: ${RABBIT_PASSWORD}
+      RABBIT_HOST: rabbit
+      RABBIT_PORT: 5672
+      RENDER_AUTH_TOKEN: ${RENDER_AUTH_TOKEN}
+      API_SECRET_KEY: ${API_SECRET_KEY}
+    ports:
+      - "80:5000"
+  render-service:
+    build: render
+    depends_on:
+      - mongo
+      - rabbit
+      - api-service
+    environment:
+      MONGO_USERNAME: ${MONGO_USERNAME}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+      RABBIT_USERNAME: ${RABBIT_USERNAME}
+      RABBIT_PASSWORD: ${RABBIT_PASSWORD}
+      RABBIT_HOST: rabbit
+      RABBIT_PORT: 5672
+      API_HOST: api-service
+      RENDER_AUTH_TOKEN: ${RENDER_AUTH_TOKEN}

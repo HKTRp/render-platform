@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% if title %}
+        <title> {{ tittle }}</title>
+    {% else %}
+        <title>MyRend</title>
+    {% endif %}
+</head>
+<body>
+<div class="content">
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+</html>
